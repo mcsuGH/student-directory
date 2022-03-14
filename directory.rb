@@ -24,7 +24,7 @@ def input_students
       if cohort =~ /[A-Z]/
         cohort = cohort.downcase!
       end
-      if cohort.downcase == "november" || cohort.downcase == "april"
+      if cohort == "november" || cohort == "april"
         break
       end
     end
@@ -118,10 +118,12 @@ end
 
 def print_if_not_empty(students)
   if students.count > 0
+    puts "The students of Villains Academy".center(25)
+    puts "------------".center(25)
     students.each_with_index do |student|
       puts "#{student[:name]} (#{student[:cohort]} cohort)".center(25)
     end
-  else nil
+    puts "Overall, we have #{students.count} great students".center(25)
   end
 end
 
