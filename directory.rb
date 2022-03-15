@@ -1,4 +1,5 @@
 @students = []
+require 'csv'
 
 def input_students
   puts "Enter the names of the students"
@@ -174,22 +175,21 @@ def process(selection)
 end
 
 def save_students(filename = "students.csv")
-  File.open(filename, "w") do |line|
+  CSV.open(filename, "w") do |csv|
+    csv << ["name","cohort","hobby","country","height"]
     @students.each do |student|
       student_data = [student[:name], student[:cohort], student[:hobby], student[:country], student[:height]]
-      csv_line = student_data.join(",")
-      line.puts csv_line
+      csv << student_data
     end
   end
   puts "You have saved the list of students into #{filename}"
 end
 
 def load_students(filename = "students.csv")
-  File.open(filename, "r").readlines.each do |line|
-    name, cohort, hobby, country, height = line.chomp.split(',')
-    add_student(name, cohort, hobby, country, height)
+  @students = []
+  CSV.foreach((filename), headers: true) do |row|
+    add_student(row["name"], row["cohort"], row["hobby"], row["country"], row["height"])
   end
-  puts "You have loaded the list of students from #{filename}"
 end
 
 def try_load_students
