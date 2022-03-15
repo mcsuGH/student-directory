@@ -4,22 +4,22 @@ def input_students
   puts "Enter the names of the students"
   puts "When finished, just hit return twice"
   # Get the first student's name
-  name = gets.chomp
+  name = STDIN.gets.chomp
   # A loop for while the name is not empty
   while !name.empty? do
     # Get the student's favorite hobby
     puts "What is this student's favorite hobby?"
-    hobby = gets.chomp
+    hobby = STDIN.gets.chomp
     # Get the student's place of birth
     puts "In which country was this student born?"
-    country = gets.chomp
+    country = STDIN.gets.chomp
     # Get the student's height
     puts "How tall is this student?"
-    height = gets.chomp
+    height = STDIN.gets.chomp
     # Get the student's cohort
     puts "Which cohort is the student in? (Default: November)"
     while true do 
-      cohort = gets.chomp
+      cohort = STDIN.gets.chomp
       cohort.empty? ? cohort = "november" : cohort
       if cohort =~ /[A-Z]/
         cohort = cohort.downcase!
@@ -38,7 +38,7 @@ def input_students
     end
     # Get the name of the next student
     puts "What is the name of the next student?"
-    name = gets.chomp
+    name = STDIN.gets.chomp
   end
 end
 
@@ -134,7 +134,7 @@ end
 def interactive_menu
   loop do
     print_menu
-    process(gets.chomp)
+    process(STDIN.gets.chomp)
   end
 end
 
@@ -179,8 +179,8 @@ def save_students
   file.close
 end
 
-def load_students
-  file = File.open("students.csv", "r")
+def load_students(filename = "students.csv")
+  file = File.open(filename, "r")
   file.readlines.each do |line|
     name, cohort, hobby, country, height = line.chomp.split(',')
     @students << {name: name, cohort: cohort.to_sym, hobby: hobby, country: country, height: height}
@@ -188,4 +188,17 @@ def load_students
   file.close
 end
 
+def try_load_students
+  filename = ARGV.first
+  return if filename.nil?
+  if File.exists?(filename)
+    load_students(filename)
+      puts "Loaded #{@students.count} from #{filename}"
+  else
+    puts "Sorry, #{filename} does not exist"
+    exit
+  end
+end
+
+try_load_students
 interactive_menu
