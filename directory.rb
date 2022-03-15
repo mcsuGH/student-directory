@@ -174,23 +174,21 @@ def process(selection)
 end
 
 def save_students(filename = "students.csv")
-  file = File.open(filename, "w")
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort], student[:hobby], student[:country], student[:height]]
-    csv_line = student_data.join(",")
-    file.puts csv_line
+  File.open(filename, "w") do |line|
+    @students.each do |student|
+      student_data = [student[:name], student[:cohort], student[:hobby], student[:country], student[:height]]
+      csv_line = student_data.join(",")
+      line.puts csv_line
+    end
   end
-  file.close
   puts "You have saved the list of students into #{filename}"
 end
 
 def load_students(filename = "students.csv")
-  file = File.open(filename, "r")
-  file.readlines.each do |line|
+  File.open(filename, "r").readlines.each do |line|
     name, cohort, hobby, country, height = line.chomp.split(',')
     add_student(name, cohort, hobby, country, height)
   end
-  file.close
   puts "You have loaded the list of students from #{filename}"
 end
 
