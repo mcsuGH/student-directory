@@ -22,10 +22,7 @@ def input_students
     while true do 
       cohort = STDIN.gets.chomp
       cohort.empty? ? cohort = "november" : cohort
-      if cohort =~ /[A-Z]/
-        cohort = cohort.downcase!
-      end
-      cohort = cohort.capitalize!
+      capitalise(cohort)
       if cohort == "November" || cohort == "April"
         break
       end
@@ -94,10 +91,7 @@ index = 0
 end
 
 def single_cohort(cohort)
-  if cohort =~ /[A-Z]/
-    cohort = cohort.downcase!
-  end
-  cohort = cohort.capitalize!
+  capitalise(cohort)
   puts "Students in the #{cohort} cohort"
   @students.each do |student|
     if student[:cohort] == cohort.to_sym
@@ -190,13 +184,17 @@ def load_students(filename = "studentinfo.csv")
   CSV.foreach((filename), headers: true) do |row|
     add_student(row["name"], row["cohort"], row["hobby"], row["country"], row["height"])
   end
+  puts "You have loaded #{@students.count} students from #{filename}"
 end
 
 def try_load_students
   filename = ARGV.first
   if filename.nil?
-    load_students
-      puts "Loaded #{@students.count} from studentinfo.csv by default"
+    if File.exists?("studentinfo.csv")
+        load_students
+        puts "Loaded #{@students.count} from studentinfo.csv by default"
+      else return
+      end
   elsif File.exists?(filename)
     load_students(filename)
       puts "Loaded #{@students.count} from #{filename}"
@@ -210,6 +208,15 @@ def add_student(name, cohort, hobby, country, height)
   @students << {name: name, cohort: cohort.to_sym, hobby: hobby, country: country, height: height}
 end
 
+def capitalise(word)
+    if word =~ /[A-Z]/
+      word = word.downcase!
+    end
+    word = word.capitalize!
+  end
+  
+
 
 try_load_students
 interactive_menu
+puts $0
