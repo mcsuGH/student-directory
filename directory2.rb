@@ -141,6 +141,15 @@ def print_menu
   puts "9. Exit"
 end
 
+def student_menu
+  puts "1. List all the students"
+  puts "2. List all the students sorted by cohorts"
+  puts "3. List the students from a certain cohort"
+  puts "4. List the students with names beginning with the letter _"
+  puts "5. List the students with names shorter than _ characters"
+  puts "9. Return to previous menu"
+end
+
 def show_students
   print_header
   print_students_list
@@ -152,7 +161,47 @@ def process(selection)
   when "1"
     input_students
   when "2"
-    show_students
+    student_menu
+    selection2 = STDIN.gets.chomp
+    case selection2
+    when "1"
+      show_students
+    when "2"
+      grouped_by_cohort
+    when "3"
+      puts "Would you like to see the April cohort or November cohort?"
+        while true do
+        cohort_selection = STDIN.gets.chomp
+        capitalise(cohort_selection)
+          if cohort_selection == "April"
+            single_cohort("april")
+            break
+          elsif cohort_selection == "November"
+            single_cohort("november")
+            break
+          end
+        end
+    when "4"
+      puts "Which first letter names would you like to see?"
+        while true do
+          letter = STDIN.gets.chomp
+            if letter.size == 1 && letter =~ /[a-zA-z]/
+              name_begin_with(letter)
+              break
+            end
+        end
+    when "5"
+      puts "What is the maximum length of name you would like to see?"
+        while true do
+          number = STDIN.gets.chomp.to_i
+            if number.is_a? Integer
+              name_shorter_than(number)
+              break
+            end
+        end
+    when "9"
+      return
+    end   
   when "3"
     puts "Enter the file which you wish to save as (Default: studentinfo.csv)"
     filesave = STDIN.gets.chomp
@@ -209,14 +258,13 @@ def add_student(name, cohort, hobby, country, height)
 end
 
 def capitalise(word)
-    if word =~ /[A-Z]/
-      word = word.downcase!
-    end
-    word = word.capitalize!
+  if word =~ /[A-Z]/
+    word = word.downcase!
   end
+  word = word.capitalize!
+end
   
 
-
+puts $0
 try_load_students
 interactive_menu
-puts $0
