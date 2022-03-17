@@ -56,7 +56,7 @@ def print_footer
 end
 
 def print_with_index
-  @students.each_with_index do |student, index| 
+  @students.each_with_index do |student, index|
     puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort)"
   end
 end
@@ -119,7 +119,7 @@ def print_if_not_empty
   if @students.count > 0
     puts "The students of Villains Academy".center(25)
     puts "------------".center(25)
-    @students.each_with_index do |student|
+    @students.each do |student|
       puts "#{student[:name]} (#{student[:cohort]} cohort)".center(25)
     end
     puts "Overall, we have #{@students.count} great students".center(25)
@@ -136,8 +136,9 @@ end
 def print_menu
   puts "1. Input the students"
   puts "2. Show the students"
-  puts "3. Save the list"
-  puts "4. Load  the list"
+  puts "3. Delete student"
+  puts "4. Save the list"
+  puts "5. Load  the list"
   puts "9. Exit"
 end
 
@@ -147,6 +148,7 @@ def student_menu
   puts "3. List the students from a certain cohort"
   puts "4. List the students with names beginning with the letter _"
   puts "5. List the students with names shorter than _ characters"
+  puts "6. List all students with index"
   puts "9. Return to previous menu"
 end
 
@@ -199,14 +201,25 @@ def process(selection)
               break
             end
         end
+      when "6"
+        print_with_index
     when "9"
       return
     end   
   when "3"
+    puts "Type the number of the student that you would like to remove. (Leave empty to go back)"
+    @students.each_with_index do |student, index| puts "#{index + 1}. #{student[:name]}" end
+      delete = STDIN.gets.chomp.to_i
+      if delete <= @students.count && delete > 0
+        puts "You have deleted #{@students[delete - 1][:name]}"
+        delete_student(delete)
+      else return
+      end
+  when "4"
     puts "Enter the file which you wish to save as (Default: studentinfo.csv)"
     filesave = STDIN.gets.chomp
     filesave.empty? ? save_students : save_students(filesave)
-  when "4"
+  when "5"
     puts "Enter the file which you wish to load from (Default: studentinfo.csv)"
     fileload = STDIN.gets.chomp
     fileload.empty? ? load_students : load_students(fileload)
@@ -241,7 +254,6 @@ def try_load_students
   if filename.nil?
     if File.exists?("studentinfo.csv")
         load_students
-        puts "Loaded #{@students.count} from studentinfo.csv by default"
       else return
       end
   elsif File.exists?(filename)
@@ -257,13 +269,16 @@ def add_student(name, cohort, hobby, country, height)
   @students << {name: name, cohort: cohort.to_sym, hobby: hobby, country: country, height: height}
 end
 
+def delete_student(index)
+  @students[index - 1].compact.empty? ? nil : @students.delete(@students[index - 1]) 
+end
+
 def capitalise(word)
   if word =~ /[A-Z]/
     word = word.downcase!
   end
   word = word.capitalize!
 end
-  
 
 puts $0
 try_load_students
