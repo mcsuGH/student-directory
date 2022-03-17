@@ -4,20 +4,14 @@ require 'csv'
 def input_students
   puts "Enter the names of the students"
   puts "When finished, just hit return twice"
-  # Get the first student's name
   name = STDIN.gets.chomp
-  # A loop for while the name is not empty
   while !name.empty? do
-    # Get the student's favorite hobby
     puts "What is this student's favorite hobby?"
     hobby = STDIN.gets.chomp
-    # Get the student's place of birth
     puts "In which country was this student born?"
     country = STDIN.gets.chomp
-    # Get the student's height
     puts "How tall is this student?"
     height = STDIN.gets.chomp
-    # Get the student's cohort
     puts "Which cohort is the student in? (Default: November)"
     while true do 
       cohort = STDIN.gets.chomp
@@ -27,32 +21,15 @@ def input_students
         break
       end
     end
-    # Add the student hash to the array
     add_student(name, cohort, hobby, country, height)
     if @students.count == 1
       puts "Now we have 1 student"
     else
       puts "Now we have #{@students.count} students"
     end
-    # Get the name of the next student
     puts "What is the name of the next student?"
     name = STDIN.gets.chomp
   end
-end
-
-def print_header
-  puts "The students of Villains Academy".center(25)
-  puts "------------".center(25)
-end
-
-def print_students_list
-  @students.each do |student|
-    puts "#{student[:name]} (#{student[:cohort]} cohort)".center(25)
-  end
-end
-
-def print_footer
-  puts "Overall, we have #{@students.count} great students".center(25)
 end
 
 def print_with_index
@@ -82,7 +59,7 @@ def name_shorter_than(number)
   end
 end
 
-def new_print
+def new_print_using_loop
 index = 0
   while index < @students.count do
     puts "#{index + 1}. #{@students[index][:name]} (#{@students[index][:cohort]} cohort)"
@@ -123,6 +100,7 @@ def print_if_not_empty
       puts "#{student[:name]} (#{student[:cohort]} cohort)".center(25)
     end
     puts "Overall, we have #{@students.count} great students".center(25)
+  else puts "There are currently no students."
   end
 end
 
@@ -164,57 +142,16 @@ def process(selection)
     input_students
   when "2"
     student_menu
-    selection2 = STDIN.gets.chomp
-    case selection2
-    when "1"
-      show_students
-    when "2"
-      grouped_by_cohort
-    when "3"
-      puts "Would you like to see the April cohort or November cohort?"
-        while true do
-        cohort_selection = STDIN.gets.chomp
-        capitalise(cohort_selection)
-          if cohort_selection == "April"
-            single_cohort("april")
-            break
-          elsif cohort_selection == "November"
-            single_cohort("november")
-            break
-          end
-        end
-    when "4"
-      puts "Which first letter names would you like to see?"
-        while true do
-          letter = STDIN.gets.chomp
-            if letter.size == 1 && letter =~ /[a-zA-z]/
-              name_begin_with(letter)
-              break
-            end
-        end
-    when "5"
-      puts "What is the maximum length of name you would like to see?"
-        while true do
-          number = STDIN.gets.chomp.to_i
-            if number.is_a? Integer
-              name_shorter_than(number)
-              break
-            end
-        end
-      when "6"
-        print_with_index
-    when "9"
-      return
-    end   
+    process2(STDIN.gets.chomp)
   when "3"
     puts "Type the number of the student that you would like to remove. (Leave empty to go back)"
     @students.each_with_index do |student, index| puts "#{index + 1}. #{student[:name]}" end
-      delete = STDIN.gets.chomp.to_i
-      if delete <= @students.count && delete > 0
-        puts "You have deleted #{@students[delete - 1][:name]}"
-        delete_student(delete)
-      else return
-      end
+    delete = STDIN.gets.chomp.to_i
+    if delete <= @students.count && delete > 0
+      puts "You have deleted #{@students[delete - 1][:name]}"
+      delete_student(delete)
+    else return
+    end
   when "4"
     puts "Enter the file which you wish to save as (Default: studentinfo.csv)"
     filesave = STDIN.gets.chomp
@@ -229,6 +166,50 @@ def process(selection)
     puts "I don't know what you meant, try again"
   end
 end
+
+def process2(selection2)
+  case selection2
+  when "1"
+    print_if_not_empty
+  when "2"
+    grouped_by_cohort
+  when "3"
+    puts "Would you like to see the April cohort or November cohort?"
+    while true do
+      cohort_selection = STDIN.gets.chomp
+      capitalise(cohort_selection)
+      if cohort_selection == "April"
+        single_cohort("april")
+        break
+      elsif cohort_selection == "November"
+        single_cohort("november")
+        break
+      end
+    end
+  when "4"
+    puts "Which first letter names would you like to see?"
+      while true do
+        letter = STDIN.gets.chomp
+          if letter.size == 1 && letter =~ /[a-zA-z]/
+            name_begin_with(letter)
+            break
+          end
+      end
+  when "5"
+    puts "What is the maximum length of name you would like to see?"
+      while true do
+        number = STDIN.gets.chomp.to_i
+        if number.is_a? Integer
+          name_shorter_than(number)
+          break
+        end
+      end
+  when "6"
+      print_with_index
+  when "9"
+    return
+  end
+end   
 
 def save_students(filename = "studentinfo.csv")
   CSV.open(filename, "w") do |csv|
@@ -261,7 +242,6 @@ def try_load_students
       puts "Loaded #{@students.count} from #{filename}"
   else
     puts "Sorry, #{filename} does not exist"
-    exit
   end
 end
 
