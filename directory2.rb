@@ -130,12 +130,6 @@ def student_menu
   puts "9. Return to previous menu"
 end
 
-def show_students
-  print_header
-  print_students_list
-  print_footer
-end
-
 def process(selection)
   case selection
   when "1"
@@ -155,7 +149,16 @@ def process(selection)
   when "4"
     puts "Enter the file which you wish to save as (Default: studentinfo.csv)"
     filesave = STDIN.gets.chomp
-    filesave.empty? ? save_students : save_students(filesave)
+    if File.exists?(filesave)
+      puts "This file already exists, do you wish to overwrite? Enter 'Y' or 'Yes'"
+      overwrite = STDIN.gets.chomp
+      capitalise(overwrite)
+      if overwrite == "Y" || overwrite == "Yes"
+        save_students(filesave)
+      else return
+      end
+    elsif filesave.empty? ? save_students : save_students(filesave)   
+    end     
   when "5"
     puts "Enter the file which you wish to load from (Default: studentinfo.csv)"
     fileload = STDIN.gets.chomp
@@ -223,11 +226,14 @@ def save_students(filename = "studentinfo.csv")
 end
 
 def load_students(filename = "studentinfo.csv")
-  @students = []
-  CSV.foreach((filename), headers: true) do |row|
-    add_student(row["name"], row["cohort"], row["hobby"], row["country"], row["height"])
+  if File.exists?(filename)
+    @students = []
+    CSV.foreach((filename), headers: true) do |row|
+      add_student(row["name"], row["cohort"], row["hobby"], row["country"], row["height"])
+    end
+    puts "You have loaded #{@students.count} students from #{filename}"
+  else puts "There is no such file called #{filename}"
   end
-  puts "You have loaded #{@students.count} students from #{filename}"
 end
 
 def try_load_students
@@ -250,7 +256,7 @@ def add_student(name, cohort, hobby, country, height)
 end
 
 def delete_student(index)
-  @students[index - 1].compact.empty? ? nil : @students.delete(@students[index - 1]) 
+  @students[index - 1].empty? ? nil : @students.delete(@students[index - 1]) 
 end
 
 def capitalise(word)
